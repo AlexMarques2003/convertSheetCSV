@@ -1,0 +1,50 @@
+function baixarCSV() {
+  
+var planilha = SpreadsheetApp.getActiveSpreadsheet();
+var guiaDados = planilha.getSheetByName("Dados");
+
+var ultimaLinha = guiaDados.getLastRow();
+var area = guiaDados.getRange("A5:AT" + ultimaLinha);
+var guiaDadosCSV = planilha.getSheetByName("Dados CSV");
+
+if(guiaDadosCSV == null){
+    planilha.insertSheet("Dados CSV");
+    var guiaDadosCSV = planilha.getSheetByName("Dados CSV");
+    }else{
+    guiaDadosCSV.clear();
+}
+
+guiaDadosCSV.activate();
+
+SpreadsheetApp.flush();
+Utilities.sleep(4000);
+
+area.copyTo(guiaDadosCSV.getRange("A1"),SpreadsheetApp.CopyPasteType.PASTE_VALUES,false);
+
+guiaDadosCSV.getRange("A:A").setNumberFormat("General"); //SETANDO FORMATO AUTOMÁTICO
+guiaDadosCSV.getRange("G:G").setNumberFormat('dd"."mm"."yyyy');
+guiaDadosCSV.getRange("AA:AA").setNumberFormat("General"); //SETANDO FORMATO AUTOMÁTICO
+guiaDadosCSV.getRange("AH:AH").setNumberFormat("General"); //SETANDO FORMATO AUTOMÁTICO
+guiaDadosCSV.getRange("AL:AL").setNumberFormat("General"); //SETANDO FORMATO AUTOMÁTICO
+
+
+SpreadsheetApp.flush();
+Utilities.sleep(2000);
+
+var fileName = "Dados CSV.csv"
+var values = guiaDadosCSV.getDataRange().getValues();
+var outputData = values.map(r => r.join(";")).join("\n");
+
+DriveApp.createFile(fileName, outputData, MimeType.PLAIN_TEXT);
+
+SpreadsheetApp.flush();
+Utilities.sleep(5000);
+
+guiaDados.activate();
+
+SpreadsheetApp.flush();
+Utilities.sleep(1000);
+
+Browser.msgBox("CSV disponibilizado com sucesso no Meu Drive!");
+
+}
